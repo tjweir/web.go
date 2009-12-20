@@ -4,19 +4,13 @@ web.go is the simplest way to write web applications in the Go programming langu
 
 ## Overview
 
-web.go should be familiar to people who've developed websites with higher-level web frameworks like sinatra, pylons, or web.py. It is designed to be a lightweight web framework that doesn't impose too much scaffolding on the code. Some features include:
+web.go should be familiar to people who've developed websites with higher-level web frameworks like sinatra, pylons, or web.py. It is designed to be a lightweight web framework that doesn't impose any scaffolding on the user. Some features include:
 
 * routing to url handlers based on regular expressions
-* easy project creation and administration
 * helper methods for rendering templates
 * web applications are compiled to native code, which means very fast page render times (order-of-magnitude improvement over python or ruby frameworks)
 
-Future releases will support:
-
-* automatic reloading when source or template files are changed
-* fcgi, scgi, and proxying support
-* executing route handlers with goroutines for multicore systems
-* ability to use asynchronous handlers (for long-polling)
+To use web.go, simply install it and import the "web" package. You then need to map url routes to function handlers using web.Get, web.Post, etc.. Finally, you need to call web.Run with the address of the host. (see the example below)
 
 ## Installation
 
@@ -25,41 +19,59 @@ Future releases will support:
 3. cd web.go && make install
 
 ## Example
-
-### Creating a project 
-
- 1. webgo create hello
- 2. cd hello
- 3. webgo serve default.ini
- 4. open your browser to http://127.0.0.1:9999
-
-
-### Adding route handlers
-
-Modify hello.go to look like the following:
-
-    package hello
+    
+    package main
     
     import (
         "fmt"
-        "time"
+        "web"
     )
-    
-    var Routes = map[string]interface{}{
-        "/today": today,
-        "/(.*)": hello,
-    }
     
     func hello(val string) string { 
         return fmt.Sprintf("hello %s", val) 
     }
     
+    func main() {
+        web.Get("/(.*)", hello)
+        web.Run("0.0.0.0:9999")
+    }
+
+
+### Adding route handlers
+
+We add a handler that matches the url path "/today". This will return the current url path. 
+
+    package main
+    
+    import (
+        "fmt"
+        "time"
+        "web"
+    )
+
+    func index() string {
+        return "Welcome!"
+    }
+
     func today() string {
         return fmt.Sprintf("The time is currently %s", time.LocalTime().Asctime())
     }
     
+    func main() {
+        web.Get("/today", today)
+        web.Get("/", index)
+        web.Run("0.0.0.0:9999")
+    }
+    
+Then stop the application and recompile it . You can point your browser to http://localhost:9999/today to see the new route. 
 
-Then stop the application and re-run 'webgo serve default.ini'. You can point your browser to http://localhost:9999/today to see the new route. 
+## Roadmap
+
+Future releases will support:
+
+* fcgi, scgi, and proxying support
+* executing route handlers with goroutines for multicore systems
+* ability to use asynchronous handlers (for long-polling)
 
 ## About
 
