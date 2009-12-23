@@ -65,7 +65,7 @@ var staticDir string
 func init() {
     contextType = reflect.Typeof(Context{})
 
-    cwd := os.Getenv("CWD")
+    cwd := os.Getenv("PWD")
     templateDir = path.Join(cwd, "templates")
     staticDir = path.Join(cwd, "static")
 }
